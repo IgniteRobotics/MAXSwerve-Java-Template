@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -70,6 +71,7 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
+
     m_odometry.update(
         Rotation2d.fromDegrees(m_gyro.getAngle()),
         new SwerveModulePosition[] {
@@ -77,7 +79,16 @@ public class DriveSubsystem extends SubsystemBase {
             m_frontRight.getPosition(),
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
+  
         });
+        SmartDashboard.putNumber("left front turn", m_frontLeft.getPosition().angle.getDegrees());
+        SmartDashboard.putNumber("left front drive", m_frontLeft.getState().speedMetersPerSecond);
+        SmartDashboard.putNumber("left back turn", m_rearLeft.getPosition().angle.getDegrees());
+        SmartDashboard.putNumber("left bacl drive", m_rearLeft.getState().speedMetersPerSecond);
+        SmartDashboard.putNumber("right front turn", m_frontRight.getPosition().angle.getDegrees());
+        SmartDashboard.putNumber("right front drive", m_frontRight.getState().speedMetersPerSecond);
+        SmartDashboard.putNumber("right back turn", m_rearRight.getPosition().angle.getDegrees());
+        SmartDashboard.putNumber("right back drive", m_rearRight.getState().speedMetersPerSecond);
   }
 
   /**
@@ -120,6 +131,10 @@ public class DriveSubsystem extends SubsystemBase {
     
     double xSpeedCommanded;
     double ySpeedCommanded;
+
+    SmartDashboard.putNumber("x stick speed", xSpeed);
+    SmartDashboard.putNumber("y stick speed", ySpeed);
+    SmartDashboard.putNumber("rot stick ", rot);
 
     if (rateLimit) {
       // Convert XY to polar for rate limiting
