@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
+
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -27,22 +30,28 @@ public class DriveSubsystem extends SubsystemBase {
   private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
       DriveConstants.kFrontLeftDrivingCanId,
       DriveConstants.kFrontLeftTurningCanId,
-      DriveConstants.kFrontLeftChassisAngularOffset);
+      DriveConstants.kFrontLeftChassisAngularOffset,
+      "frontLeft");
 
   private final MAXSwerveModule m_frontRight = new MAXSwerveModule(
       DriveConstants.kFrontRightDrivingCanId,
       DriveConstants.kFrontRightTurningCanId,
-      DriveConstants.kFrontRightChassisAngularOffset);
+      DriveConstants.kFrontRightChassisAngularOffset,
+      "frontRight");
 
   private final MAXSwerveModule m_rearLeft = new MAXSwerveModule(
       DriveConstants.kRearLeftDrivingCanId,
       DriveConstants.kRearLeftTurningCanId,
-      DriveConstants.kBackLeftChassisAngularOffset);
+      DriveConstants.kBackLeftChassisAngularOffset,
+      "rearLeft");
 
   private final MAXSwerveModule m_rearRight = new MAXSwerveModule(
       DriveConstants.kRearRightDrivingCanId,
       DriveConstants.kRearRightTurningCanId,
-      DriveConstants.kBackRightChassisAngularOffset);
+      DriveConstants.kBackRightChassisAngularOffset,
+      "rearRight");
+
+  private final MAXSwerveModule[] m_allModules = {m_frontLeft, m_frontRight, m_rearLeft, m_rearRight};
 
   // The gyro sensor
   private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
@@ -67,12 +76,28 @@ public class DriveSubsystem extends SubsystemBase {
           m_rearRight.getPosition()
       });
 
+
+  @AutoLog
+  static class DriveInput{
+    public double xStickSpeed = 0;
+    public double yStickSpeed = 0;
+    public double rotStickSpeed = 0;
+    public double xCalculatedSpeed = 0;
+    public double yCalculatedSpeed = 0;
+    public double rotCalculatedSpeed = 0;
+  }
+
+  private final DriveInputAutoLogged input = new DriveInputAutoLogged();
+
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
   }
 
   @Override
   public void periodic() {
+    //log out inputs
+    Logger.processInputs("Drive/Input", input);
+
     // Update the odometry in the periodic block
 
     m_odometry.update(
@@ -92,6 +117,14 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("right front drive", m_frontRight.getState().speedMetersPerSecond);
         SmartDashboard.putNumber("right back turn", m_rearRight.getPosition().angle.getDegrees());
         SmartDashboard.putNumber("right back drive", m_rearRight.getState().speedMetersPerSecond);
+
+        //Log out current pose
+        Logger.recordOutput("Drive/Pose", m_odometry.getPoseMeters());
+        
+        //call each modules periodic
+        for(MAXSwerveModule mod: m_allModules){
+          mod.periodic();
+        }
   }
 
   /**
@@ -134,6 +167,11 @@ public class DriveSubsystem extends SubsystemBase {
     
     double xSpeedCommanded;
     double ySpeedCommanded;
+
+    //set input stick speeds for logging.
+    input.xStickSpeed = xSpeed;
+    input.yStickSpeed = ySpeed;
+    input.rotStickSpeed = rot;
 
     SmartDashboard.putNumber("x stick speed", xSpeed);
     SmartDashboard.putNumber("y stick speed", ySpeed);
@@ -186,6 +224,11 @@ public class DriveSubsystem extends SubsystemBase {
       ySpeedCommanded = ySpeed;
       m_currentRotation = rot;
     }
+
+    //set calculated speeds for logging
+    input.xCalculatedSpeed = xSpeedCommanded;
+    input.yCalculatedSpeed = ySpeedCommanded;
+    input.rotCalculatedSpeed = m_currentRotation;
 
     // Convert the commanded speeds into the correct units for the drivetrain
     double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
