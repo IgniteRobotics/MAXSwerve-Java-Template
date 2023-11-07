@@ -180,5 +180,10 @@ public class MAXSwerveModule {
     Logger.processInputs("Drive/Module/" + m_Name + "/Input", input);
     Logger.recordOutput("Drive/Module/" + m_Name + "/Velocity", getState().speedMetersPerSecond);
     Logger.recordOutput("Drive/Module/" + m_Name + "/Position", getState().angle.getDegrees());
-  }
+    Logger.recordOutput("Drive/Module/" + m_Name + "/DriveCurrent", m_drivingSparkMax.getOutputCurrent());
+    Logger.recordOutput("Drive/Module/" + m_Name + "/DriveVoltage", m_drivingSparkMax.getAppliedOutput() * m_drivingSparkMax.getBusVoltage());
+    Logger.recordOutput("Drive/Module/" + m_Name + "/DriveTemp", m_drivingSparkMax.getMotorTemperature());
+    Logger.recordOutput("Drive/Module/" + m_Name + "/TurnCurrent", m_turningSparkMax.getOutputCurrent());
+    Logger.recordOutput("Drive/Module/" + m_Name + "/TurnVoltage", m_turningSparkMax.getAppliedOutput() * m_drivingSparkMax.getBusVoltage());
+    Logger.recordOutput("Drive/Module/" + m_Name + "/TurnTemp", m_turningSparkMax.getMotorTemperature());
 }
