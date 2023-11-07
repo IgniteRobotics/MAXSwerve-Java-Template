@@ -4,22 +4,19 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxPIDController;
 
-import org.littletonrobotics.junction.AutoLog;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggableInputs;
-
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
-
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants.ModuleConstants;
 
 public class MAXSwerveModule {
@@ -35,6 +32,8 @@ public class MAXSwerveModule {
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
 
+  private String m_Name = "UnknownModule";
+
   @AutoLog
   static class ModuleInput{
     public SwerveModuleState m_inputState =  new SwerveModuleState(0.0, new Rotation2d());
@@ -48,7 +47,7 @@ public class MAXSwerveModule {
    * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
    * Encoder.
    */
-  public MAXSwerveModule(int drivingCANId, int turningCANId, double chassisAngularOffset) {
+  public MAXSwerveModule(int drivingCANId, int turningCANId, double chassisAngularOffset, String name) {
     m_drivingSparkMax = new CANSparkMax(drivingCANId, MotorType.kBrushless);
     m_turningSparkMax = new CANSparkMax(turningCANId, MotorType.kBrushless);
 
@@ -120,6 +119,8 @@ public class MAXSwerveModule {
     m_chassisAngularOffset = chassisAngularOffset;
     m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
     m_drivingEncoder.setPosition(0);
+
+    m_Name = name;
   }
 
   /**
@@ -176,8 +177,8 @@ public class MAXSwerveModule {
 
   public void periodic(){
     input.m_inputState = this.m_desiredState;
-    Logger.processInputs("Drive/Module", input);
-    Logger.recordOutput("Drive/Module/Velocity", getState().speedMetersPerSecond);
-    Logger.recordOutput("Drive/Module/Position", getState().angle.getDegrees());
+    Logger.processInputs("Drive/Module/" + m_Name + "/Input", input);
+    Logger.recordOutput("Drive/Module/" + m_Name + "/Velocity", getState().speedMetersPerSecond);
+    Logger.recordOutput("Drive/Module/" + m_Name + "/Position", getState().angle.getDegrees());
   }
 }
