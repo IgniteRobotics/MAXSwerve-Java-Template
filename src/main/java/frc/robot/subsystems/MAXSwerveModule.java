@@ -186,4 +186,5 @@ public class MAXSwerveModule {
     Logger.recordOutput("Drive/Module/" + m_Name + "/TurnCurrent", m_turningSparkMax.getOutputCurrent());
     Logger.recordOutput("Drive/Module/" + m_Name + "/TurnVoltage", m_turningSparkMax.getAppliedOutput() * m_drivingSparkMax.getBusVoltage());
     Logger.recordOutput("Drive/Module/" + m_Name + "/TurnTemp", m_turningSparkMax.getMotorTemperature());
+  }
 }
