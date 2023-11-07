@@ -12,6 +12,11 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxPIDController;
+
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 
@@ -29,6 +34,13 @@ public class MAXSwerveModule {
 
   private double m_chassisAngularOffset = 0;
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
+
+  @AutoLog
+  static class ModuleInput{
+    public SwerveModuleState m_inputState =  new SwerveModuleState(0.0, new Rotation2d());
+  }
+
+  private final ModuleInputAutoLogged input = new ModuleInputAutoLogged();
 
   /**
    * Constructs a MAXSwerveModule and configures the driving and turning motor,
@@ -160,5 +172,12 @@ public class MAXSwerveModule {
   /** Zeroes all the SwerveModule encoders. */
   public void resetEncoders() {
     m_drivingEncoder.setPosition(0);
+  }
+
+  public void periodic(){
+    input.m_inputState = this.m_desiredState;
+    Logger.processInputs("Drive/Module", input);
+    Logger.recordOutput("Drive/Module/Velocity", getState().speedMetersPerSecond);
+    Logger.recordOutput("Drive/Module/Position", getState().angle.getDegrees());
   }
 }
