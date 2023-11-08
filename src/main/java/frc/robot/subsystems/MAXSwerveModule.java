@@ -36,7 +36,8 @@ public class MAXSwerveModule {
 
   @AutoLog
   static class ModuleInput{
-    public SwerveModuleState m_inputState =  new SwerveModuleState(0.0, new Rotation2d());
+    public double m_inputSpeed = 0;
+    public double m_inputAngle = 0;
   }
 
   private final ModuleInputAutoLogged input = new ModuleInputAutoLogged();
@@ -176,7 +177,8 @@ public class MAXSwerveModule {
   }
 
   public void periodic(){
-    input.m_inputState = this.m_desiredState;
+    input.m_inputSpeed = this.m_desiredState.speedMetersPerSecond;
+    input.m_inputAngle = this.m_desiredState.angle.getDegrees();
     Logger.processInputs("Drive/Module/" + m_Name + "/Input", input);
     Logger.recordOutput("Drive/Module/" + m_Name + "/Velocity", getState().speedMetersPerSecond);
     Logger.recordOutput("Drive/Module/" + m_Name + "/Position", getState().angle.getDegrees());
