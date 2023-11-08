@@ -163,3 +163,6 @@ bin/
 
 # Build info for logging
 src/main/java/frc/robot/BuildConstants.java
+networktables.json
+simgui-ds.json
+simgui.json
