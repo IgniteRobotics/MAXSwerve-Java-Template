@@ -20,9 +20,11 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.utils.SwerveUtils;
+import monologue.Logged;
+import monologue.Monologue.LogBoth;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class DriveSubsystem extends SubsystemBase {
+public class DriveSubsystem extends SubsystemBase implements Logged{
   // Create MAXSwerveModules
   private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
       DriveConstants.kFrontLeftDrivingCanId,
@@ -48,8 +50,11 @@ public class DriveSubsystem extends SubsystemBase {
   private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
 
   // Slew rate filter variables for controlling lateral acceleration
+  @LogBoth
   private double m_currentRotation = 0.0;
+  @LogBoth
   private double m_currentTranslationDir = 0.0;
+  @LogBoth
   private double m_currentTranslationMag = 0.0;
 
   private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
@@ -92,6 +97,12 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("right front drive", m_frontRight.getState().speedMetersPerSecond);
         SmartDashboard.putNumber("right back turn", m_rearRight.getPosition().angle.getDegrees());
         SmartDashboard.putNumber("right back drive", m_rearRight.getState().speedMetersPerSecond);
+
+
+        m_frontLeft.periodic();
+        m_frontRight.periodic();
+        m_rearLeft.periodic();
+        m_rearRight.periodic();
   }
 
   /**
@@ -99,6 +110,7 @@ public class DriveSubsystem extends SubsystemBase {
    *
    * @return The pose.
    */
+  @LogBoth
   public Pose2d getPose() {
     return m_odometry.getPoseMeters();
   }
