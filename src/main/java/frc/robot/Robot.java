@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import monologue.Monologue;
+import monologue.Monologue.LogBoth;
 import monologue.Logged;
 
 /**
@@ -21,6 +22,9 @@ public class Robot extends TimedRobot implements Logged {
 
   private RobotContainer m_robotContainer;
 
+  @LogBoth
+  private CommandScheduler m_Scheduler;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -30,6 +34,8 @@ public class Robot extends TimedRobot implements Logged {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+
+    m_Scheduler = CommandScheduler.getInstance();
 
     //do this LAST!!
     Monologue.setupLogging(this, "/Robot");
