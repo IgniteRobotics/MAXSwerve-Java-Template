@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.ParkCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import monologue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -68,10 +69,8 @@ public class RobotContainer implements Logged {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(m_driverController, XboxController.Button.kA.value)
-        .whileTrue(new RunCommand(
-            () -> m_robotDrive.setX(),
-            m_robotDrive));
+    new JoystickButton(m_driverController, XboxController.Button.kX.value)
+        .whileTrue(new ParkCommand(m_robotDrive));
   }
 
   /**
